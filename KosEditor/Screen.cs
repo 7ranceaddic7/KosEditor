@@ -3,13 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 namespace KosEditor
 {
     //This holds the 768 * 768 screen
     //wich renders to a texture
+
     public class Screen
     {
-        Pixel[] pixels = new Pixel[768 * 768]; //Not dynamic
+        Pixel[] pixels = new Pixel[760 * 760]; //Not dynamic
+
+        //pixel array requires to be 760x760
+        void addPixelArray(Pixel[] np)
+        {
+            for (int x = 0; x < 760; x++)
+            {
+                for (int y = 0; y < 760; y++)
+                {
+                    pixels[x + y * 760] = np[x + y * 760];
+                }
+            }
+        }
 
         UnityEngine.Texture2D getTexture(int scale)
         {

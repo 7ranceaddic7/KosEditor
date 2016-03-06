@@ -109,7 +109,7 @@ namespace KosEditor
     public class Pixel
     {
 
-        Color color = Color.BLACK;
+        public Color color = Color.BLACK;
         
         //Forms a Unity color from the color (using pallete)
         public UnityEngine.Color getColor()
