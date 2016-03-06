@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileUtil.cs" />
     <Compile Include="Screen.cs" />
     <Compile Include="VGA.cs" />
     <Compile Include="Window.cs" />

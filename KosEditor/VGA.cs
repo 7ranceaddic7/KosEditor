@@ -22,6 +22,8 @@ namespace KosEditor
     //Screen pixel array
     public class VGA
     {
+
+
         public Pixel[] pixels = new Pixel[760 * 760];
         //256 characters as in the codepage
         public Glyph[] chars = new Glyph[76 * 76];
@@ -30,8 +32,8 @@ namespace KosEditor
 
         public void loadFont(string path)
         {
-            UnityEngine.Texture2D fLoad = UnityEngine.Resources.Load<UnityEngine.Texture2D>(path);
-            if(fLoad.width == 160 && fLoad.height == 160)
+            UnityEngine.Texture2D fLoad = FileUtil.loadTexture("font.png");
+            if (fLoad.width == 160 && fLoad.height == 160)
             {
                 font = fLoad;
             }
