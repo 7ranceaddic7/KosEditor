@@ -14,8 +14,15 @@ namespace KosEditor
     //-------------------------------------
     // Interface between other classes and Unity
 
-    public class Window
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    public class Window : MonoBehaviour
     {
+        //Holds the position of our window
+        private Rect windowPosition = new Rect();
 
+        public void Start()
+        {
+            Debug.Log("[kOS-Editor] Start!");
+        }
     }
 }
