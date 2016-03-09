@@ -100,7 +100,7 @@ namespace KosEditor
             }
             else
             {
-                return new UnityEngine.Color32(0, 0, 0, 255);
+                return new UnityEngine.Color32(255, 0, 255, 255);
             }
         }
     }

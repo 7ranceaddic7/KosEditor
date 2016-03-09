@@ -13,6 +13,14 @@ namespace KosEditor
         public byte index = 0;
         public Color color = Color.WHITE;
         public Color bColor = Color.BLACK;
+
+        public Glyph(byte index, Color color, Color bColor)
+        {
+            this.index = index;
+            this.color = color;
+            this.bColor = bColor;
+        }
+
     }
 
 
@@ -24,18 +32,40 @@ namespace KosEditor
     {
 
 
-        public Pixel[] pixels = new Pixel[760 * 760];
+        public Pixel[,] pixels = new Pixel[760, 760];
         //256 characters as in the codepage
-        public Glyph[] chars = new Glyph[76 * 76];
+        public Glyph[,] chars = new Glyph[76, 76];
 
         public UnityEngine.Texture2D font;
+        
 
-        public void loadFont(string path)
+        public VGA()
+        {
+            chars = new Glyph[76, 76];
+            for(int x = 0; x <= 76 - 1; x++)
+            {
+                for(int y = 0; y <= 76 - 1; y++)
+                {
+                    chars[x, y] = new Glyph(0, Color.BLACK, Color.BLACK);
+                }
+            }
+            pixels = new Pixel[760, 760];
+            for (int x = 0; x <= 760 - 1; x++)
+            {
+                for (int y = 0; y <= 760 - 1; y++)
+                {
+                    pixels[x, y] = new Pixel(Color.BLACK);
+                }
+            }
+        }
+
+        public void loadFont()
         {
             UnityEngine.Texture2D fLoad = FileUtil.loadTexture("font.png");
             if (fLoad.width == 160 && fLoad.height == 160)
             {
                 font = fLoad;
+                font.filterMode = UnityEngine.FilterMode.Point;
             }
             else
             {
@@ -44,53 +74,73 @@ namespace KosEditor
             }
         }
 
-        public Pixel[] getPixelArray()
+
+        public static int[] getFontLocation(byte index)
         {
-            Pixel[] pixels = new Pixel[760 * 760];
-            for(int x = 0; x < 76; x++)
+            int[] coords = new int[2];
+            coords[0] = index % 76;
+            coords[1] = (index - coords[0]) / 76;
+            return coords;
+        }
+
+        public Pixel[,] getPixelArray()
+        {
+            //We will work on the "pixels" array
+            if(font == null)
             {
-                for(int y = 0; y < 76; y++)
+                UnityEngine.Debug.LogError("[kOS-Editor->VGA->getPixelArray()] Font is null!");
+                return pixels;
+            }
+            //We will go through every character:
+            for(int x = 0; x <= 76 - 1; x++)
+            {
+                for(int y = 0; y <= 76 - 1; y++)
                 {
-                    //This is simple, the byte stored
-                    //in the byte array is an index in our
-                    //font file
 
-                    int oX = 0;
-                    int oY = 0;
-                    for(int i = 0; i < chars[x + y * 76].index; i++)
+                    Glyph c = chars[x, y];
+                    //Indexes in the font texture:
+                    int fontIndexX = 0;
+                    int fontIndexY = 0;
+
+                    //Get these:
+                    fontIndexX = c.index % 76;
+                    fontIndexY = (c.index - fontIndexX) / 76;
+
+                    //Now we will draw every single pixel
+                    //of the character, setting color depending
+                    //on the color of the font
+
+                    for(int oX = 0; oX < 10; oX++)
                     {
-                        //We travel to the starting index of the character,
-                        //as every characters is 10x10 and x is limited to
-                        //10, we do this:
-                        if(oX >= 10)
+                        for(int oY = 0; oY < 10; oY++)
                         {
-                            oY++;
-                            oX = 0;
-                        }
-                    }
-
-                    //Now we have the location of the glyph at oX and oY,
-                    //simply get the 100 pixels of it!
-
-                    for(int pX = 0; pX < 10; pX++)
-                    {
-                        for(int pY = 0; pY < 10; pY++)
-                        {
-                            //Check if it's not a black pixel
-                            if (font.GetPixel(oX + pX, oY + pY).r != 0)
+                            //Sample from font: (OMG I'm dumb GetPixel returns floats T_T)
+                            if(font.GetPixel(fontIndexX + oX, fontIndexY + oY).r >= 0.3)
                             {
-                                pixels[(x + pX) + (y + pY) * 760].color = chars[x + y * 76].color;
+                                //White pixel:
+                                pixels[(x * 10) + oX, (y * 10) + oY] = new Pixel(chars[x, y].color);
                             }
                             else
                             {
-                                pixels[(x + pX) + (y + pY) * 760].color = chars[x + y * 76].bColor;
+                                //Black pixel:
+                                pixels[(x * 10) + oX, (y * 10) + oY] = new Pixel(chars[x, y].bColor);
                             }
                         }
                     }
                 }
             }
+
             return pixels;
         }
 
+        public void log(string a)
+        {
+            UnityEngine.Debug.Log(a);
+        }
+
     }
+
+
+   
+
 }
